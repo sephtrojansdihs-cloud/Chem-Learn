@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chem & Learn</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#dff6ff;
+    text-align:center;
+}
+
+h1{
+    color:#0d47a1;
+}
+
+#game{
+    width:900px;
+    margin:auto;
+}
+
+#info{
+    display:flex;
+    justify-content:space-around;
+    font-size:22px;
+    font-weight:bold;
+    margin:20px;
+}
+
+.track{
+    position:relative;
+    width:850px;
+    height:90px;
+    background:#ccc;
+    margin:15px auto;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.finish{
+    position:absolute;
+    right:0;
+    width:10px;
+    height:100%;
+    background:red;
+}
+
+.car{
+    position:absolute;
+    left:0;
+    top:20px;
+    font-size:45px;
+    transition:.5s;
+}
+
+#questionBox{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    width:700px;
+    margin:auto;
+    box-shadow:0 0 10px gray;
+}
+
+button{
+    margin:8px;
+    padding:12px 18px;
+    font-size:18px;
+    cursor:pointer;
+    border:none;
+    border-radius:8px;
+    background:#1976d2;
+    color:white;
+}
+
+button:hover{
+    background:#0d47a1;
+}
+
+#result{
+    font-size:22px;
+    margin:15px;
+    font-weight:bold;
+}
+
+#restart{
+    background:green;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Chem Clash</h1>
+<h2><<< Easy Round >>></h2>
+
+<div id="game">
+
+<div id="info">
+<div>⏱ Time: <span id="timer">60</span></div>
+<div>✅ Score: <span id="score">0</span></div>
+</div>
+
+<div class="track">
+<div class="finish"></div>
+<div id="player" class="car">🚗</div>
+</div>
+
+<div class="track">
+<div class="finish"></div>
+<div id="enemy" class="car">🚙</div>
+</div>
+
+<div id="questionBox">
+<h2 id="question"></h2>
+
+<div id="choices"></div>
+
+<div id="result"></div>
+
+<button id="restart" onclick="restartGame()">Restart Game</button>
+
+</div>
+
+</div>
+
+<script>
+
+const questions=[
+
+{q:"What is the symbol of Hydrogen?",a:"H",c:["H","He","Hy","Hg"]},
+{q:"What is the symbol of Helium?",a:"He",c:["He","H","Hg","Ho"]},
+{q:"What is the symbol of Carbon?",a:"C",c:["Ca","Co","C","Cu"]},
+{q:"What is the symbol of Nitrogen?",a:"N",c:["Ni","N","Na","Ne"]},
+{q:"What is the symbol of Oxygen?",a:"O",c:["O","Ox","Og","Os"]},
+{q:"What is the symbol of Sodium?",a:"Na",c:["So","Na","S","Sn"]},
+{q:"What is the symbol of Magnesium?",a:"Mg",c:["Mn","Mg","M","Ma"]},
+{q:"What is the symbol of Aluminum?",a:"Al",c:["Au","Al","Am","A"]},
+{q:"What is the symbol of Silicon?",a:"Si",c:["Sc","Si","S","Sl"]},
+{q:"What is the symbol of Phosphorus?",a:"P",c:["Ph","Po","P","Pa"]},
+{q:"What is the symbol of Sulfur?",a:"S",c:["Su","S","Si","Sr"]},
+{q:"What is the symbol of Chlorine?",a:"Cl",c:["C","Cl","Cr","Ch"]},
+{q:"What is the symbol of Potassium?",a:"K",c:["P","K","Ka","Po"]},
+{q:"What is the symbol of Calcium?",a:"Ca",c:["C","Ca","Cl","Co"]},
+{q:"What is the symbol of Iron?",a:"Fe",c:["Ir","Fe","In","Fr"]},
+{q:"What is the symbol of Copper?",a:"Cu",c:["Co","Cu","Cp","C"]},
+{q:"What is the symbol of Zinc?",a:"Zn",c:["Zi","Zn","Z","Ze"]},
+{q:"What is the symbol of Silver?",a:"Ag",c:["Si","Ag","Au","Al"]},
+{q:"What is the symbol of Gold?",a:"Au",c:["Ag","Au","Go","G"]},
+{q:"What is the symbol of Mercury?",a:"Hg",c:["Mc","Hg","Hy","H"]}
+
+];
+
+let player=0;
+let enemy=0;
+let score=0;
+let current;
+let timer=60;
+let gameOver=false;
+
+const playerCar=document.getElementById("player");
+const enemyCar=document.getElementById("enemy");
+
+function shuffle(array){
+    return array.sort(()=>Math.random()-0.5);
+}
+
+function nextQuestion(){
+
+if(gameOver)return;
+
+current=questions[Math.floor(Math.random()*questions.length)];
+
+document.getElementById("question").innerHTML=current.q;
+
+let html="";
+
+shuffle([...current.c]).forEach(choice=>{
+
+html+=`<button onclick="checkAnswer('${choice}')">${choice}</button>`;
+
+});
+
+document.getElementById("choices").innerHTML=html;
+
+}
+
+function checkAnswer(ans){
+
+if(gameOver)return;
+
+if(ans===current.a){
+
+score++;
+
+player+=40;
+
+playerCar.style.left=player+"px";
+
+document.getElementById("result").innerHTML="✅ Correct!";
+
+}else{
+
+enemy+=40;
+
+enemyCar.style.left=enemy+"px";
+
+document.getElementById("result").innerHTML="❌ Wrong!";
+
+}
+
+document.getElementById("score").innerHTML=score;
+
+if(player>=780){
+
+endGame("🎉 YOU WIN!");
+
+return;
+
+}
+
+if(enemy>=780){
+
+endGame("😢 COMPUTER WINS!");
+
+return;
+
+}
+
+nextQuestion();
+
+}
+
+function endGame(msg){
+
+gameOver=true;
+
+document.getElementById("question").innerHTML=msg;
+
+document.getElementById("choices").innerHTML="";
+
+document.getElementById("result").innerHTML="Final Score: "+score;
+
+}
+
+setInterval(function(){
+
+if(gameOver)return;
+
+timer--;
+
+document.getElementById("timer").innerHTML=timer;
+
+if(timer<=0){
+
+if(player>enemy)
+
+endGame("⏰ Time's Up! YOU WIN!");
+
+else if(enemy>player)
+
+endGame("⏰ Time's Up! COMPUTER WINS!");
+
+else
+
+endGame("⏰ It's a DRAW!");
+
+}
+
+},1000);
+
+function restartGame(){
+
+player=0;
+enemy=0;
+score=0;
+timer=60;
+gameOver=false;
+
+playerCar.style.left="0px";
+enemyCar.style.left="0px";
+
+document.getElementById("timer").innerHTML=60;
+document.getElementById("score").innerHTML=0;
+document.getElementById("result").innerHTML="";
+
+nextQuestion();
+
+}
+
+nextQuestion();
+
+</script>
+
+</body>
+</html>

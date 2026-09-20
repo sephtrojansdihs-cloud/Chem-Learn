@@ -125,6 +125,10 @@ button:hover{
 
 </div>
 
+
+<audio id="correctSound" src="check.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="wrong.mp3" preload="auto"></audio>
+
 <script>
 
 const questions=[
@@ -192,6 +196,10 @@ if(gameOver)return;
 
 if(ans===current.a){
 
+const correctSound=document.getElementById("correctSound");
+correctSound.currentTime=0;
+correctSound.play();
+
 score++;
 
 player+=40;
@@ -201,6 +209,10 @@ playerCar.style.left=player+"px";
 document.getElementById("result").innerHTML="✅ Correct!";
 
 }else{
+
+const wrongSound=document.getElementById("wrongSound");
+wrongSound.currentTime=0;
+wrongSound.play();
 
 enemy+=40;
 
